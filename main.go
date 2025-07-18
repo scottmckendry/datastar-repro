@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/starfederation/datastar/sdk/go/datastar"
+	"github.com/starfederation/datastar-go/datastar"
 )
 
 var customers = []struct {
@@ -87,17 +87,18 @@ func handleNavReplaceSSE(w http.ResponseWriter, r *http.Request) {
 	sse.PatchElements(buf.String(), datastar.WithModeReplace())
 }
 
+// change the datastar version between RC.1 and RC.2 to see the difference in behaviour
 const indexHTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<title>Datastar Morph Repro</title>
-	<script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@main/bundles/datastar.js"></script>
+	<script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@1.0.0-RC.1/bundles/datastar.js"></script>
 	<style>
 		.selected { background: #cce; }
 	</style>
 </head>
-<body data-signals='{"currentID":"{{.CurrentID}}"}'>
+<body data-signals='{"currentID":"{{.CurrentID}}"}' data-on-datastar-sse='alert("Event Recieved")'>
 	<ul id="nav-list">
 		{{range .Customers}}
 			<li>
@@ -112,7 +113,7 @@ const indexHTML = `<!DOCTYPE html>
 		{{end}}
 	</div>
 	<div>
-		<p>Click a name to select. The nav should update class.</p>
+		<p>Click a name to select. In RC.1, this will generate an alert. In RC.2, it will not.</p>
 	</div>
 </body>
 </html>
